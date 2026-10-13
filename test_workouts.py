@@ -165,4 +165,4 @@ if __name__ == "__main__":
     test_update_workout_not_found()
     test_update_workouts_success()
     test_get_user_total_volume_skips_invalid()
-    print("All checks passed")
+    print("Workout tests passed successfully")
