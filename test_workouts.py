@@ -77,9 +77,12 @@ def test_update_workout_invalid_weight():
         {"id": 2, "user_id": 1, "exercise": "bench press", "weight": 70, "reps": 8}
     ]
     len_trains = len(my_works)
-    update = update_workout_weight(my_works, 1, -50)
-    assert update["status"] == "error"
-    assert update["error"] == "Weight must be positive"
+    try:
+        update_workout_weight(my_works, 1, -50)
+    except ValueError as error:
+        assert str(error) == "Weight must be positive"
+    else:
+        assert False, "Expected"
     my_train_exercise = get_workout_by_id(my_works, 1)
     assert my_train_exercise is not None
     assert my_train_exercise["weight"] == 100

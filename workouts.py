@@ -83,7 +83,7 @@ def get_user_max_weight(workouts: list[dict], user_id: int, exercise: str) -> di
 
 def update_workout_weight(workouts: list[dict], workout_id: int, new_weight: int) -> dict:
     if new_weight <= 0:
-        return {"status": "error", "error": "Weight must be positive"}
+        raise ValueError("Weight must be positive")
 
     my_workout = get_workout_by_id(workouts, workout_id)
 
