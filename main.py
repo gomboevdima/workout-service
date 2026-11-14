@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from workouts import get_workout_by_id, delete_workout, update_workout_weight
+from workouts import get_workout_by_id, delete_workout, update_workout_weight, create_workout
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -31,6 +31,13 @@ def delete(workout_id: int):
 class WorkoutWeightUpdate(BaseModel):
     weight: int
 
+class WorkoutCreate(BaseModel):
+    id: int
+    user_id: int
+    weight: int
+    reps: int
+    exercise: str
+
 @app.patch("/workouts/{workout_id}")
 def patch(workout_id: int, data: WorkoutWeightUpdate):
     try:
@@ -40,4 +47,14 @@ def patch(workout_id: int, data: WorkoutWeightUpdate):
     if update["status"] == "error":
         raise HTTPException(status_code=404, detail=update["error"])
     return update
+
+
+@app.post("/workouts", status_code=201)
+def post(data: WorkoutCreate):
+    workout = data.model_dump()
+    result = create_workout(workouts, workout)
+    if result["status"] == "error":
+        raise HTTPException(status_code=400, detail=result["error"])
+    else:
+        return result["workout"]
 
