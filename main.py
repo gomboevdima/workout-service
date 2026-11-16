@@ -10,11 +10,28 @@ workouts = [{"id": 1, "user_id": 1, "exercise": "push ups", "weight": 100, "reps
     {"id": 4, "user_id": 3, "exercise": "pullover", "weight": 100, "reps": 15},
             ]
 
+class WorkoutWeightUpdate(BaseModel):
+    weight: int
+
+class WorkoutCreate(BaseModel):
+    id: int
+    user_id: int
+    weight: int
+    reps: int
+    exercise: str
+
+class WorkoutRead(BaseModel):
+    id: int
+    user_id: int
+    weight: int
+    reps: int
+    exercise: str
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
 
-@app.get("/workouts/{workout_id}")
+@app.get("/workouts/{workout_id}", response_model=WorkoutRead)
 def get(workout_id: int):
     workout = get_workout_by_id(workouts, workout_id)
     if workout is None:
@@ -28,16 +45,6 @@ def delete(workout_id: int):
         raise HTTPException(status_code=404, detail=deleted_workout["error"])
     return deleted_workout
 
-class WorkoutWeightUpdate(BaseModel):
-    weight: int
-
-class WorkoutCreate(BaseModel):
-    id: int
-    user_id: int
-    weight: int
-    reps: int
-    exercise: str
-
 @app.patch("/workouts/{workout_id}")
 def patch(workout_id: int, data: WorkoutWeightUpdate):
     try:
@@ -49,7 +56,7 @@ def patch(workout_id: int, data: WorkoutWeightUpdate):
     return update
 
 
-@app.post("/workouts", status_code=201)
+@app.post("/workouts", status_code=201, response_model=WorkoutRead)
 def post(data: WorkoutCreate):
     workout = data.model_dump()
     result = create_workout(workouts, workout)

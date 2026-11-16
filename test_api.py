@@ -186,3 +186,20 @@ def test_delete_workout_api_not_found():
     get_response = client.get("/workouts/999")
     assert get_response.status_code == 404
     assert get_response.json() == {"detail": "Workout not found"}
+
+def test_get_workout_filters_extra_fields():
+    expected_workout = {"id": 100,
+                        "user_id": 1,
+                        "exercise": "squat",
+                        "weight": 100,
+                        "reps": 15}
+
+    copy_expected_workout = expected_workout.copy()
+    copy_expected_workout["internal_note"] = "for server only"
+
+    main.workouts.append(copy_expected_workout)
+    get_response = client.get("/workouts/100")
+    assert get_response.status_code == 200
+    assert get_response.json() == expected_workout
+
+
