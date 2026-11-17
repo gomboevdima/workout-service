@@ -202,4 +202,35 @@ def test_get_workout_filters_extra_fields():
     assert get_response.status_code == 200
     assert get_response.json() == expected_workout
 
+def test_patch_workout_filters_extra_fields():
+    expected_workout = {"id": 100,
+                        "user_id": 1,
+                        "exercise": "squat",
+                        "weight": 100,
+                        "reps": 15}
 
+    copy_expected_workout = expected_workout.copy()
+    copy_expected_workout["internal_note"] = "for server only"
+
+    main.workouts.append(copy_expected_workout)
+    patch_response = client.patch("/workouts/100", json={"weight": 120})
+    expected_workout["weight"] = 120
+
+    assert patch_response.status_code == 200
+    assert patch_response.json() == {"status": "updated", "workout": expected_workout}
+
+def test_delete_workout_filters_extra_fields():
+    expected_workout = {"id": 100,
+                        "user_id": 1,
+                        "exercise": "squat",
+                        "weight": 100,
+                        "reps": 15}
+
+    copy_expected_workout = expected_workout.copy()
+    copy_expected_workout["internal_note"] = "for server only"
+
+    main.workouts.append(copy_expected_workout)
+    delete_response = client.delete("/workouts/100")
+
+    assert delete_response.status_code == 200
+    assert delete_response.json() == {"status": "deleted", "workout": expected_workout}

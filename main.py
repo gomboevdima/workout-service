@@ -27,6 +27,10 @@ class WorkoutRead(BaseModel):
     reps: int
     exercise: str
 
+class WorkoutActionResponse(BaseModel):
+    status: str
+    workout: WorkoutRead
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
@@ -38,14 +42,14 @@ def get(workout_id: int):
         raise HTTPException(status_code=404, detail="Workout not found")
     return workout
 
-@app.delete("/workouts/{workout_id}")
+@app.delete("/workouts/{workout_id}", response_model=WorkoutActionResponse)
 def delete(workout_id: int):
     deleted_workout = delete_workout(workouts, workout_id)
     if deleted_workout["status"] == "error":
         raise HTTPException(status_code=404, detail=deleted_workout["error"])
     return deleted_workout
 
-@app.patch("/workouts/{workout_id}")
+@app.patch("/workouts/{workout_id}", response_model=WorkoutActionResponse)
 def patch(workout_id: int, data: WorkoutWeightUpdate):
     try:
         update = update_workout_weight(workouts, workout_id, data.weight)
